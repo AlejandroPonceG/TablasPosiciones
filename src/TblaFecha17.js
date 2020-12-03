@@ -11,11 +11,27 @@ function Tabla(props) {
         { Equipo1: props.Tequipos[7], Goals1: 0, Equipo2: props.Tequipos[8], Goals2: 0 }
     ])
 
+    const [PartidosF19] = useState([
+        { Equipo1: props.Tequipos[9], Goals1: 0, Equipo2: props.Tequipos[0], Goals2: 0 },
+        { Equipo1: props.Tequipos[8], Goals1: 0, Equipo2: props.Tequipos[1], Goals2: 0 },
+        { Equipo1: props.Tequipos[7], Goals1: 0, Equipo2: props.Tequipos[2], Goals2: 0 },
+        { Equipo1: props.Tequipos[3], Goals1: 0, Equipo2: props.Tequipos[4], Goals2: 0 },
+        { Equipo1: props.Tequipos[5], Goals1: 0, Equipo2: props.Tequipos[6], Goals2: 0 }
+    ])
+
+    const [PartidosF20] = useState([
+        { Equipo1: props.Tequipos[5], Goals1: 0, Equipo2: props.Tequipos[7], Goals2: 0 },
+        { Equipo1: props.Tequipos[6], Goals1: 0, Equipo2: props.Tequipos[4], Goals2: 0 },
+        { Equipo1: props.Tequipos[3], Goals1: 0, Equipo2: props.Tequipos[8], Goals2: 0 },
+        { Equipo1: props.Tequipos[9], Goals1: 0, Equipo2: props.Tequipos[2], Goals2: 0 },
+        { Equipo1: props.Tequipos[0], Goals1: 0, Equipo2: props.Tequipos[6], Goals2: 0 }
+    ])
+
     const validacion = (Fecha) => {
         switch (Fecha) {
             case 'Fecha18':
                 if (props.setD.Fecha18 === false) {
-                    simPJ()
+                    simPJ(Partidos)
                     props.setD.setFecha18(true)
                     props.setD.setFecha('Fecha-18')
                 }else{
@@ -24,36 +40,46 @@ function Tabla(props) {
                 break;
             case 'Fecha19':
                 if (props.setD.Fecha19 === false && props.setD.Fecha18 === true) {
-                    simPJ()
+                    simPJ(PartidosF19)
                     props.setD.setFecha19(true)
                     props.setD.setFecha('Fecha-19')
                 }else{
                     alert('Ya ha sido registrada esta fecha o no se ha registrado aun la fecha 18')
                 }
                 break;
+            case 'Fecha20':
+                if (props.setD.Fecha20 === false && props.setD.Fecha19 === true && props.setD.Fecha18 === true) {
+                    simPJ(PartidosF20)
+                    props.setD.setFecha20(true)
+                    props.setD.setFecha('Fecha-20')
+                }else{
+                    alert('Ya ha sido registrada esta fecha o no se ha registrado aun la fecha 19')
+                }
+                break;
+            default:
         }
     };
 
-    const simPJ = () => {
+    const simPJ = (partidos) => {
 
         props.set(props.Tequipos.map(ele => {
             ele.PJ = ele.PJ + 1
             return ele
         }))
 
-        setPartidos(Partidos.map(ele2 => {
+        setPartidos(partidos.map(ele2 => {
             ele2.Goals1 = 0
             ele2.Goals2 = 0
             return ele2
         }))
 
-        setPartidos(Partidos.map(ele2 => {
+        setPartidos(partidos.map(ele2 => {
             ele2.Goals1 = Math.floor(Math.random() * (10 - 0)) + 0;
             ele2.Goals2 = Math.floor(Math.random() * (10 - 0)) + 0;
             return ele2
         }))
 
-        setPartidos(Partidos.map(ele2 => {
+        setPartidos(partidos.map(ele2 => {
             if (ele2.Goals1 > ele2.Goals2) {
                 ele2.Equipo1.G = ele2.Equipo1.G+1 
                 ele2.Equipo2.P = ele2.Equipo2.P+1 
@@ -96,22 +122,38 @@ function Tabla(props) {
             if (a.pts < b.pts) {
                 return -1
             }
-            return 0
+            if (a.pts === b.pts) {
+                if (a.DF > b.DF) {
+                    return 1
+                }else if (a.DF < b.DF) {
+                    return -1
+                }else if (a.DF === b.DF) {
+                    if (a.GF > b.GF) {
+                        return 1
+                    }else if (a.GF < b.GF) {
+                        return -1
+                    }else{
+                        return 0
+                    }
+                }
+            }
+            return 0;
         }))
-        
-        console.log(Partidos);
-
+        console.log(partidos);
     }
 
     return (
         <div className="text-center">
             <div className="mt-5"><h1>TABLA DE POSICIONES LIGA BETPLAY</h1></div>
             <div className="mt-5"><h1>{props.setD.Fecha}</h1></div>
-            <div className="container border mt-5">
-                <div className="container mt-3">
-                    <button onClick={()=>{validacion('Fecha19')}} id="F19" className="btn btn-primary float-right mr-4">simular F-19</button>
-                    <button onClick={()=>{validacion('Fecha18')}} id="F18" className="btn btn-primary float-right mr-4">simular F-18</button>
-                </div>
+
+            <div className="container">
+                <button onClick={()=>{validacion('Fecha18')}} className="btn btn-outline-secondary mr-4 mt-4">simular F-18</button>
+                <button onClick={()=>{validacion('Fecha19')}} className="btn btn-outline-secondary mr-4 mt-4">simular F-19</button>
+                <button onClick={()=>{validacion('Fecha20')}} className="btn btn-outline-secondary mr-4 mt-4">simular F-20</button>
+            </div>
+
+            <div className="container border mt-4">
                 <table className="table">
                     <thead>
                         <tr>
@@ -131,7 +173,7 @@ function Tabla(props) {
                         {props.Tequipos.map((equipo, position) => (
                             <tr key={equipo.Equipo}>
                                 <td>{position+1}</td>
-                                <td><div className="image"><img className="float-left" src={'imgs/' + equipo.image} width="17"></img><div className="float-left ml-5">{equipo.Equipo}</div></div></td>
+                                <td><div className="image"><img className="float-left" src={'imgs/' + equipo.image} alt="" width="17"></img><div className="float-left ml-5">{equipo.Equipo}</div></div></td>
                                 <td>{equipo.pts}</td>
                                 <td>{equipo.PJ}</td>
                                 <td>{equipo.G}</td>
